@@ -1,0 +1,17 @@
+        Aws::Client::ClientConfiguration clientConfig;
+        Aws::DynamoDB::DynamoDBClient dynamoClient(clientConfig);
+
+        Aws::DynamoDB::Model::ListTablesRequest ltr;
+        ltr.SetLimit(50);
+        do
+        {
+            const Aws::DynamoDB::Model::ListTablesOutcome& lto = dynamoClient.ListTables(ltr);
+            if (!lto.IsSuccess())
+            {
+                std::cout << "Error: " << lto.GetError().GetMessage() << std::endl;
+                return 1;
+            }
+            for (const auto& s : lto.GetResult().GetTableNames())
+                std::cout << s << std::endl;
+            ltr.SetExclusiveStartTableName(lto.GetResult().GetLastEvaluatedTableName());
+        } while (!ltr.GetExclusiveStartTableName().empty());

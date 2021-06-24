@@ -1,0 +1,18 @@
+        Aws::Client::ClientConfiguration clientConfig;
+        if (!region.empty())
+            clientConfig.region = region;
+        Aws::DynamoDB::DynamoDBClient dynamoClient(clientConfig);
+
+        Aws::DynamoDB::Model::DeleteTableRequest dtr;
+        dtr.SetTableName(table);
+
+        const Aws::DynamoDB::Model::DeleteTableOutcome& result = dynamoClient.DeleteTable(dtr);
+        if (result.IsSuccess())
+        {
+            std::cout << "Table \"" << result.GetResult().GetTableDescription().GetTableName() <<
+                " deleted!\n";
+        }
+        else
+        {
+            std::cout << "Failed to delete table: " << result.GetError().GetMessage();
+        }

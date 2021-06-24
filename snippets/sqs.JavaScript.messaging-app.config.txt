@@ -1,0 +1,24 @@
+
+const { CognitoIdentityClient } = require("@aws-sdk/client-cognito-identity");
+const {
+  fromCognitoIdentityPool,
+} = require("@aws-sdk/credential-provider-cognito-identity");
+const {
+  SQSClient,
+  GetQueueUrlCommand,
+  SendMessageCommand,
+  ReceiveMessageCommand,
+  PurgeQueueCommand,
+} = require("@aws-sdk/client-sqs");
+
+const REGION = "REGION"; // For example, "us-east-1".
+const IdentityPoolId = "IDENTITY_POOL_ID"; // The Amazon Cognito Identity Pool ID.
+const QueueName = "SQS_QUEUE_NAME"; // The Amazon SQS queue name, which must end in .fifo for this example.
+
+const sqsClient = new SQSClient({
+  region: REGION,
+  credentials: fromCognitoIdentityPool({
+    client: new CognitoIdentityClient({ region: REGION }),
+    identityPoolId: IdentityPoolId,
+  }),
+});

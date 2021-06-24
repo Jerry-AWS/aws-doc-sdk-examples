@@ -1,0 +1,21 @@
+const { CognitoIdentityClient } =require("@aws-sdk/client-cognito-identity");
+const {
+    fromCognitoIdentityPool,
+} =require("@aws-sdk/credential-provider-cognito-identity");
+const {TranscribeStreamingClient} =require("@aws-sdk/client-transcribe-streaming");
+
+const REGION = "REGION";
+const IDENTITY_POOL_ID = "IDENTITY_POOL_ID"; // An Amazon Cognito Identity Pool ID.
+
+
+// Create an Amazon Transcribe service client object.
+const transcribeClient = new TranscribeStreamingClient({
+    region: REGION,
+    credentials: fromCognitoIdentityPool({
+        client: new CognitoIdentityClient({ region: REGION }),
+        identityPoolId: IDENTITY_POOL_ID
+    }),
+});
+
+
+export { transcribeClient};

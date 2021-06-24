@@ -1,0 +1,27 @@
+
+import boto3
+from botocore.exceptions import ClientError
+
+
+def create_redshift_cluster_subnet_group(group_name,
+                                         subnet_ids,
+                                         Desc='Redshift cluster subnet group'):
+    """Create a subnet group for an Amazon Redshift cluster
+
+    :param group_name: string; Name to assign to the group
+    :param subnet_ids: list of strings; List of existing subnet IDs
+    :param Desc: string; Description of group
+    :return: dictionary containing subnet information, otherwise None
+    """
+
+    redshift_client = boto3.client('redshift')
+    try:
+        response = redshift_client.create_cluster_subnet_group(
+            ClusterSubnetGroupName=group_name,
+            SubnetIds=subnet_ids,
+            Description=Desc)
+    except ClientError as e:
+        print(f'ERROR: {e}')
+        return None
+    else:
+        return response['ClusterSubnetGroup']

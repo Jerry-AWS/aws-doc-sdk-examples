@@ -1,0 +1,47 @@
+
+// Import required AWS SDK clients and commands for Node.js
+const {
+  DynamoDBClient,
+  CreateTableCommand,
+  PutItemCommand,
+} = require("@aws-sdk/client-dynamodb");
+
+// Set the AWS Region
+const REGION = "REGION"; //e.g. "us-east-1"
+
+// Set the parameters
+const tableParams = {
+  AttributeDefinitions: [
+    {
+      AttributeName: "Id", //ATTRIBUTE_NAME_1
+      AttributeType: "N", //ATTRIBUTE_TYPE
+    },
+  ],
+  KeySchema: [
+    {
+      AttributeName: "Id", //ATTRIBUTE_NAME_1
+      KeyType: "HASH",
+    },
+  ],
+  ProvisionedThroughput: {
+    ReadCapacityUnits: 1,
+    WriteCapacityUnits: 1,
+  },
+  TableName: "TABLE_NAME", //TABLE_NAME
+  StreamSpecification: {
+    StreamEnabled: false,
+  },
+};
+
+// Create DynamoDB service object
+const dbclient = new DynamoDBClient({ region: REGION });
+
+const run = async () => {
+  try {
+    const data = await dbclient.send(new CreateTableCommand(tableParams));
+    console.log("Table created.", data.TableDescription.TableName);
+  } catch (err) {
+    console.log("Error", err);
+  }
+};
+run();

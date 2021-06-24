@@ -1,0 +1,34 @@
+        Aws::Client::ClientConfiguration clientConfig;
+        Aws::DynamoDB::DynamoDBClient dynamoClient(clientConfig);
+
+        Aws::DynamoDB::Model::PutItemRequest pir;
+        pir.SetTableName(table);
+
+        Aws::DynamoDB::Model::AttributeValue av;
+        av.SetS(name);
+        pir.AddItem("Name", av);
+
+        for (int x = 3; x < argc; x++)
+        {
+            const Aws::String arg(argv[x]);
+            const Aws::Vector<Aws::String>& flds = Aws::Utils::StringUtils::Split(arg, '=');
+            if (flds.size() == 2)
+            {
+                Aws::DynamoDB::Model::AttributeValue val;
+                val.SetS(flds[1]);
+                pir.AddItem(flds[0], val);
+            }
+            else
+            {
+                std::cout << "Invalid argument: " << arg << std::endl << USAGE;
+                return 1;
+            }
+        }
+
+        const Aws::DynamoDB::Model::PutItemOutcome result = dynamoClient.PutItem(pir);
+        if (!result.IsSuccess())
+        {
+            std::cout << result.GetError().GetMessage() << std::endl;
+            return 1;
+        }
+        std::cout << "Done!" << std::endl;
